@@ -1,0 +1,20 @@
+[package]
+name = "reader"
+version = "0.1.0"
+authors = ["Greg Berns <gregberns@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0.0"
+serde_derive = "1.0.0"
+rdkafka = { version = "0.23.1", features = ["cmake-build", "ssl-vendored"] }
+clap="*"
+log = "0.4"
+log4rs = "0.8.1"
+futures = "0.3.4"
+tokio = { version = "0.2.11", features = ["full"] }
+avro-rs = { git = "https://github.com/MaterializeInc/avro-rs.git" }
+failure = "0.1.6"
+futures-util = "0.3.4"
+chrono = "0.4"

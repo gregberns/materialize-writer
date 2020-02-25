@@ -1,0 +1,60 @@
+version: '3.7'
+
+services:
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:5.3.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+  kafka:
+    image: confluentinc/cp-enterprise-kafka:5.3.0
+    depends_on: [zookeeper]
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_BROKER_ID: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_JMX_PORT: 9991
+
+  writer:
+    build: .
+    depends_on:
+      - materialized
+      - kafka
+  
+  inspect:
+    build: ./inspect
+    # command: "true"
+
+  materialized:
+    image: materialize/materialized:latest
+    ports:
+      - "6875:6875"
+    init: true
+    command: -w1
+    volumes:
+      - ./log:/log
+  cli:
+    build: ./cli
+    init: true
+    depends_on:
+      - materialized
+
+  # cli:
+  #   image: materialize/cli
+  #   init: true
+  #   # if you run the terminal with a dark background uncomment these lines
+  #   # environment:
+  #   #   MZCLI_PROMPT: DARK_MODE
+  #   depends_on:
+  #     - materialized
+
+  # setup:
+  #   image: materialize/cli
+  #   depends_on:
+  #     - materialized
+  #   volumes:
+  #     - ./script:/script
+  #   command: /script/setup.sh
