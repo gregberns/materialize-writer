@@ -16,6 +16,8 @@ When Materialized processes this message it fails with the error at the [top of 
 
 When I looked at the message in Kafka, the Avro `Writer` is putting the whole schema in the payload.
 
+I also tried to add the 'magic' header manually to the message (see `serialize()`), but that didnt seem to help.
+
 ### Kafka Message with Without Schema
 
 So instead of using the `Writer` directly I wanted to encode the `Value::Record` and send it, as seen in `src/main.rs:serialize2()`.

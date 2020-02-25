@@ -98,12 +98,15 @@ async fn main() {
     info!("Topics: ({:?})", topics);
     info!("Group Id: ({:?})", group_id);
 
-    let payload = serialize().unwrap();
-    publish(brokers, topics[0], &payload).await;
-
-    // let payload = serialize2().unwrap();
+    // This sends over the schema in the payload
+    // let payload = serialize().unwrap();
     // publish(brokers, topics[0], &payload).await;
 
+    // This uses `encode` to send a minimal payload
+    let payload = serialize2().unwrap();
+    publish(brokers, topics[0], &payload).await;
+
+    // Code for consumer
     // let context = CustomContext;
     // let consumer = get_consumer(context, brokers, group_id, &topics);
     // process_message_stream(&consumer).await;
@@ -223,17 +226,12 @@ fn serialize() -> Result<Vec<u8>, Error> {
 
     writer.append(record)?;
 
-    // let test = Test {
-    //     a: 27,
-    //     b: "foo".to_owned(),
-    // };
-
-    // writer.append_ser(test)?;
-
     writer.flush()?;
 
     let input = writer.into_inner();
 
+    //add header info: '01111'
+    // required for https://github.com/MaterializeInc/materialize/blob/master/src/interchange/avro.rs#L394
     let body = [b'O', b'1', b'1', b'1', b'1'].to_vec();
 
     let output = [&body[..], &input[..]].concat();
@@ -266,6 +264,7 @@ fn serialize2() -> Result<Vec<u8>, Error> {
     ]);
 
     //add header info: '01111'
+    // required for https://github.com/MaterializeInc/materialize/blob/master/src/interchange/avro.rs#L394
     let mut body = [b'O', b'1', b'1', b'1', b'1'].to_vec();
     encode(&record, &schema, &mut body);
 
