@@ -6,7 +6,9 @@ See [#2125](https://github.com/MaterializeInc/materialize/issues/2125) for some 
 
 ## Errors
 
-In the example code, there are two attempts at passing a message:
+In the example code, there are two attempts at passing a message.
+
+To run the first example, go to `main()` and uncomment line 102-103 and comment 106-107.
 
 ### Kafka Message with Schema
 
